@@ -1,23 +1,25 @@
 package com.example.provaTecnica.services.impl;
 
+import com.example.provaTecnica.converter.CajaRegistradoraMapper;
 import com.example.provaTecnica.dto.ResultatSaldoCajaDTO;
 import com.example.provaTecnica.dto.search.CercaSaldoDTO;
 import com.example.provaTecnica.model.CajaRegistradora;
 import com.example.provaTecnica.services.CajaRegistradoraService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-
 @Service
 public class CajaRegistradoraServiceImpl implements CajaRegistradoraService {
-
-
-
     private Set<CajaRegistradora> cajaRegistradoraSet;
+
+    @Inject
+    CajaRegistradoraMapper cajaRegistradoraMapper;
 
     @Override
     public ResultatSaldoCajaDTO getSaldoCaja(CercaSaldoDTO filter) {
@@ -25,11 +27,7 @@ public class CajaRegistradoraServiceImpl implements CajaRegistradoraService {
         generateMock();
         return cajaRegistradoraSet.stream()
                 .filter(cajaRegistradora -> cajaRegistradora.getNumeroCaja().equals(filter.getNumeroCaja()) && cajaRegistradora.getFecha().equals(filter.getFecha()))
-                .map(cajaRegistradora -> {
-                    ResultatSaldoCajaDTO resultatSaldoCajaDTO = new ResultatSaldoCajaDTO();
-                    resultatSaldoCajaDTO.setSaldo(cajaRegistradora.getSaldo());
-                    return resultatSaldoCajaDTO;
-                })
+                .map(cajaRegistradoraMapper::toResultatSaldoCajaDTO)
                 .findAny().orElse(new ResultatSaldoCajaDTO());
     }
 
